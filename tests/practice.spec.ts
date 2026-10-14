@@ -2,9 +2,11 @@ import { test, expect } from '@playwright/test';
 
 test('User logs in successfully', async ({ page }) => {
   await page.goto('/');
+  //fill up the login form with valid email and password and click on login button
   await page.getByRole('textbox', { name: 'you@example.com' }).fill('admin@test.com');
   await page.getByRole('textbox', { name: 'Enter password' }).fill('1234');
   await page.getByRole('button', { name: 'Login' }).click();
+  //assertion that the user is redirected to the dashboard page and the profile page is visible
   await expect(page.getByRole('heading', { name: 'Profile', exact: true })).toBeVisible();
   await expect(page.locator('body')).toContainText('First Name');
   // Save cookies + localStorage (login token) to auth.json
@@ -12,7 +14,7 @@ test('User logs in successfully', async ({ page }) => {
 //   await page.pause();
 });
 
-
+//double click
 test('double-button-click', async ({ page }) => {
   await page.goto('/dashboard/practice-components');
 
@@ -29,6 +31,8 @@ test('double-button-click', async ({ page }) => {
 });
 
 
+//right click
+
 test('right-button-click', async ({ page }) => {
   await page.goto('/dashboard/practice-components');
 
@@ -44,7 +48,7 @@ test('right-button-click', async ({ page }) => {
   expect(message).toBe('context clicked!');
 });
 
-
+//New Tab
 test('open new tab', async ({ page, context }) => {
   await page.goto('/dashboard/practice-components');
 
@@ -65,7 +69,7 @@ test('open new tab', async ({ page, context }) => {
   await expect(page.getByRole('button', { name: 'Open New Tab' })).toBeVisible();
 });
 
-
+//New Window
 test('New window handling', async ({ page,context }) => {
    await page.goto('/dashboard/practice-components');
 
@@ -88,9 +92,11 @@ test('New window handling', async ({ page,context }) => {
 });
 
 
+//Modal-Dialogue
 
 test('open modal button', async ({ page }) => {
  await page.goto('/dashboard/practice-components');
+ //using css locator to click on the button that opens the modal
  await page.locator('#openModalBtn').click();
  const modal = page.getByRole('dialog');
  await expect(modal).toBeVisible();
@@ -100,7 +106,7 @@ test('open modal button', async ({ page }) => {
  await expect(page.getByText('Modal Closed!')).toBeVisible();
 });
 
-
+//Date and Time Picker
 test('date and time picker', async ({ page }) => {
   await page.goto('/dashboard/practice-components');
   const dateTime = page.locator('input[type="datetime-local"]');
@@ -108,7 +114,7 @@ test('date and time picker', async ({ page }) => {
   await expect(dateTime).toHaveValue('2026-12-25T10:30');
 });
 
-
+//Readonly and Editable Date Picker
 test('readonly date picker', async ({ page }) => {
   await page.goto('/dashboard/practice-components');
   const dateInput = page.locator('input[readonly]');
@@ -118,7 +124,7 @@ test('readonly date picker', async ({ page }) => {
   await expect(dateInput).toHaveValue('10/20/2026');
 });
 
-
+// Editable: can type directly, so no need to open the calendar
 test('editable date picker', async ({ page }) => {
   await page.goto('/dashboard/practice-components');
   const dateInput = page.getByPlaceholder('Select date');
@@ -135,7 +141,7 @@ test('editable date picker', async ({ page }) => {
 
 
 
-
+//iframe login form
 test('iframe login form', async ({ page }) => {
   await page.goto('/dashboard/practice-components');
 
