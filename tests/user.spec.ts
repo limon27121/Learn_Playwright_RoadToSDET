@@ -1,6 +1,20 @@
 import { test, expect } from '@playwright/test';
+import { CreateUserPage, UserData } from '../pages/CreateUserPage.pom';
+import { LoginPage } from '../pages/LoginPage.pom';
 
-test('add-new-user', async ({ page }) => {
+test('Login', async ({ page }) => {
+  const loginPage = new LoginPage(page);
+  await loginPage.goto();
+  await loginPage.login('admin@test.com', '1234');
+
+  // Logged in: Profile page is shown
+  await expect(loginPage.profileHeading).toBeVisible();
+  await expect(page.locator('body')).toContainText('First Name');
+
+  await loginPage.saveLoginState();
+});
+
+test.skip('add-new-user', async ({ page }) => {
   await page.goto('/dashboard/add-user');
 
   // Inputs have no id/name, so locate them by their placeholder text.
@@ -68,4 +82,31 @@ test('add-new-user', async ({ page }) => {
   // h2 is "Registered Users <count>"; the count changes, so match only the text part
   await expect(page.getByRole('heading', { name: 'Registered Users' })).toBeVisible();
 //   await page.pause();
+});
+
+
+test('Create User', async ({ page }) => {
+  let createUserPage = new CreateUserPage(page);
+  await page.goto('/dashboard/add-user');
+  const userData: UserData = {
+    firstName: 'Moontaser',
+    lastName: 'Limon',
+    email: `moontaser.limon${Date.now()}@example.com`,
+    phoneNumber: '01712345678',
+    password: '1234',
+    birthDate: '11/22/1998',
+    gender: 'Male',
+    photoPath: 'resources/small-photo.png',
+    bloodGroup: 'AB+',
+    district: 'Dhaka'
+  };
+  
+  await createUserPage.fillForm(userData);
+  await page.getByRole('button', { name: 'Create User' }).click();
+  await expect(page.getByText('User created successfully!')).toBeVisible();
+
+  // Redirect waits a few seconds, longer than the default 5s, so allow 15s
+  await expect(page).toHaveURL(/\/dashboard\/users/, { timeout: 15000 });
+  await expect(page.getByRole('heading', { name: 'Registered Users' })).toBeVisible();
+
 });
